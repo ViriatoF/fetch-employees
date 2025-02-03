@@ -1,38 +1,47 @@
+import { useEffect, useState } from "react";
+import "./App.css";
+import EmployeeCard from "./components/EmployeeCard";
 
-import { useState } from 'react';
-import './App.css'
-import EmployeeCard from './components/EmployeeCard'
+//
 
-const sampleEmployee = {
-  name: {
-    first: "Jean",
-    last: "VALJEAN",
-  },
-  email: "pikapika@joumail.pt",
-  picture:{
-    large: "https://randomuser.me/api/portraits/med/men/40.jpg",
-  },
-}
+type EmployeeI = {
+	name: {
+		first: string;
+		last: string;
+	};
+	email: string;
+	picture: {
+		medium: string;
+	};
+};
 
 function App() {
+	const [newEmployees, setEmployees] = useState<EmployeeI | null>(null);
 
-  const [employee, setEmployee] =useState(sampleEmployee);
+	useEffect(() => {
+		fetch("http://localhost:3310/api/employees")
+			.then((response) => response.json())
+			.then((data) => {
+				console.log(data.result[0]);
+				setEmployees(data.result[0]);
+			});
+	}, []);
 
-  const getEmployee = () => {
-    fetch("https://randomuser.me/api?nat=en")
-    .then((response)=> response.json())
-    .then((data)=> {
-      console.log(data)
-      setEmployee(data.results[0]);
-    });
-  };
-
-  return (
-    <>
-    <EmployeeCard employee = {employee} />
-      <button type='button' onClick={getEmployee}>Get employee</button>
-    </>
-  )
+	return (
+		<>
+			{/* {newEmployees.map((employee) => (
+				<EmployeeCard
+					key={newEmployees.indexOf(employee)}
+					employee={employee}
+				/>
+			))} */}
+			<section>
+				<p> {`${newEmployees?.name.first} ${newEmployees?.name.last}`}</p>
+				<img src={newEmployees?.picture.medium} alt="" />
+				<p>{newEmployees?.email} </p>
+			</section>
+		</>
+	);
 }
 
-export default App
+export default App;
